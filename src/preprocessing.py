@@ -3,22 +3,23 @@ from __future__ import annotations
 import numpy as np
 import pandas as pd
 
-from src.config import TRAIN_PATH
+from src.config import CONFIG
 from src.constants import (
     LOG_FEATURES,
     RANK_FEATURES,
     BINARY_FEATURES,
     MISSING_THRESHOLD,
     LOWER_CLIP,
-    UPPER_CLIP
+    UPPER_CLIP,
+    EPSILON
 )
 
 def load_data() -> pd.DataFrame:
-    """
-    Load dataset.
-    """
 
-    df = pd.read_csv(TRAIN_PATH)
+    df = pd.read_csv(CONFIG.train_path)
+
+    if "id" in df.columns:
+        df = df.rename(columns={"id": "ID"})
 
     return df
 
@@ -33,7 +34,7 @@ def validate_data(df: pd.DataFrame) -> None:
 
     print("Duplicate Rows :", df.duplicated().sum())
 
-    print("Duplicate IDs :", df["id"].duplicated().sum())
+    print("Duplicate IDs :", df["ID"].duplicated().sum())
 
     print("=" * 40)
 
@@ -107,7 +108,8 @@ def log_transform(df: pd.DataFrame) -> pd.DataFrame:
 
         if col in df.columns:
 
-            df[f"{col}_log"] = np.log1p(df[col])
+            # Floor impossible inputs just above -1 to avoid log1p warnings.
+            df[f"{col}_log"] = np.log1p(df[col].clip(lower=-1 + EPSILON))
 
     print("✓ Log features created")
 
@@ -127,8 +129,7 @@ def rank_transform(df: pd.DataFrame) -> pd.DataFrame:
     print("✓ Rank features created")
 
     return df
-
-def preprocess() -> pd.DataFrame:
+def preprocess_research() -> pd.DataFrame:
 
     df = load_data()
 
@@ -143,5 +144,34 @@ def preprocess() -> pd.DataFrame:
     df = log_transform(df)
 
     df = rank_transform(df)
+
+    return df
+
+def preprocess_baseline() -> pd.DataFrame:
+
+    df = load_data()
+
+    validate_data(df)
+
+    zero_impute_cols = [
+        "f4","f6","f7","f8","f9","f10",
+        "f13","f14","f15","f16",
+        "f17","f18","f21"
+    ]
+
+    for c in zero_impute_cols:
+        df[c] = df[c].fillna(0)
+
+    df["f5"] = df["f5"].fillna(df["f5"].median())
+    df["f11"] = df["f11"].fillna(df["f11"].median())
+    df["f12"] = df["f12"].fillna(0)
+    df["f19"] = df["f19"].fillna(0)
+    df["f20"] = df["f20"].fillna(0)
+    df["f22"] = df["f22"].fillna(0)
+    df["f23"] = df["f23"].fillna(0)
+
+    print("\nRemaining Missing Values")
+
+    print(df.isna().sum())
 
     return df

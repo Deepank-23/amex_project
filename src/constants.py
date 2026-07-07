@@ -1,38 +1,31 @@
-"""
-Project Constants
-"""
-
-# -------------------------------
-# Feature Groups
-# -------------------------------
-
 LOG_FEATURES = [
-    "f1", "f4", "f5", "f6", "f7",
-    "f8", "f9", "f10", "f17",
-    "f18", "f21"
+    "f1",
+    "f4",
+    "f5",
+    "f6",
+    "f7",
+    "f8",
+    "f9",
+    "f10",
 ]
 
 RANK_FEATURES = [
-    "f1", "f4", "f5", "f6", "f7",
-    "f8", "f9", "f10", "f11",
-    "f12", "f17", "f18",
-    "f21", "f22", "f23"
+    "f1",
+    "f5",
 ]
 
-BINARY_FEATURES = [
-    "f2",
-    "f3",
-    "f20"
-]
+BINARY_FEATURES = []
 
-# -------------------------------
-# Preprocessing
-# -------------------------------
+MISSING_THRESHOLD = 0.10
 
-MISSING_THRESHOLD = 0.05
+LOWER_CLIP = 0.01
 
-LOWER_CLIP = 0.005
+UPPER_CLIP = 0.99
 
-UPPER_CLIP = 0.995
+EPSILON = 1e-9
 
-EPSILON = 1e-6
+TOP_PERCENT = 0.20
+
+BASELINE_SCORE = 20.0
+
+RANDOM_STATE = 42

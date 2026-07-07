@@ -1,15 +1,31 @@
-log_transform()
+"""
+Utility Functions
+"""
 
-rank_transform()
+from __future__ import annotations
 
-winsorize()
+import json
+import os
 
-normalize()
+from dataclasses import asdict
 
-percentile_rank()
+from src.config import CONFIG
 
-save_plot()
 
-save_dataframe()
+def save_experiment_metadata():
 
-timer()
+    os.makedirs(
+        "experiments",
+        exist_ok=True,
+    )
+
+    with open(
+        "experiments/current_config.json",
+        "w",
+    ) as f:
+
+        json.dump(
+            asdict(CONFIG),
+            f,
+            indent=4,
+        )

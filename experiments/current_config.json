@@ -1,0 +1,15 @@
+{
+    "name": "BEST_087",
+    "description": "Reproduce best public model",
+    "apr_low": 0.18,
+    "apr_mid1": 0.22,
+    "apr_mid2": 0.26,
+    "apr_high": 0.29,
+    "interchange_rate": 0.02,
+    "breakage_value": 0.0075,
+    "interest_weight": 0.374,
+    "merchant_weight": 0.501,
+    "breakage_weight": 0.125,
+    "interaction_weight": 0.2,
+    "risk_weight": 0.05
+}
