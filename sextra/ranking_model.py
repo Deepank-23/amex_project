@@ -4,14 +4,14 @@ import pandas as pd
 
 from src.constants import WEIGHTS
 
-from sextra.issuer_economics import (
+from src.issuer_economics import (
     interest_revenue,
     merchant_revenue,
     reward_value,
     interaction,
     risk_discount,
 )
-from sextra.issuer_economics import build_components
+from src.issuer_economics import build_components
 
 
 def zscore(series: pd.Series) -> pd.Series:

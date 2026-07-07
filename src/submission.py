@@ -45,8 +45,7 @@ def create_submission(
 
 def save_raw_scores(
     df: pd.DataFrame,
-    path: str = "outputs/raw_scores/BEST_BASELINE_SCORE.csv",
-) -> pd.DataFrame:
+    path: str = "outputs/raw_scores/BEST_BASELINE_SCORE.csv") -> pd.DataFrame:
 
     path = Path(path)
 
