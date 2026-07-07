@@ -13,9 +13,12 @@ from src.preprocessing import (
     preprocess_baseline,
     preprocess_research,
 )
-from src.submission import create_submission
+from src.submission import (
+    create_submission,
+    save_raw_scores,
+)
 from src.validation import validate_components
-
+from src.baseline_validation import validate_raw_scores
 
 def main():
 
@@ -95,6 +98,13 @@ def main():
         df=df,
         score=df["BEST_Score"],
         path="outputs/submissions/BEST_BASELINE.csv",
+    )
+    raw_scores = save_raw_scores(df)
+    
+
+    validate_raw_scores(
+        current_path="outputs/raw_scores/BEST_BASELINE_SCORE.csv",
+        historical_path="data/AMEX_R1_BEST_087.xlsx",
     )
 
     print(submission.head())

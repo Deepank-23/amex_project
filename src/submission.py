@@ -1,4 +1,10 @@
+"""
+Submission Module
+"""
+
 from __future__ import annotations
+
+from pathlib import Path
 
 import pandas as pd
 
@@ -7,23 +13,26 @@ def create_submission(
     df: pd.DataFrame,
     score: pd.Series,
     path: str = "outputs/submissions/BEST_BASELINE.csv",
-):
+) -> pd.DataFrame:
+
+    path = Path(path)
+
+    path.parent.mkdir(
+        parents=True,
+        exist_ok=True,
+    )
 
     submission = pd.DataFrame()
 
-    if "ID" in df.columns:
-        submission["ID"] = df["ID"]
-    elif "id" in df.columns:
-        submission["ID"] = df["id"]
-    else:
-        submission["ID"] = df.index
+    submission["ID"] = df["ID"]
 
+    # Every customer gets a unique rank
     submission["Prediction"] = (
         score.rank(
             ascending=False,
-            method="first"
+            method="first",
         ).astype(int)
-    )   
+    )
 
     submission.to_csv(
         path,
@@ -33,3 +42,30 @@ def create_submission(
     print(f"\nSubmission saved to:\n{path}")
 
     return submission
+
+def save_raw_scores(
+    df: pd.DataFrame,
+    path: str = "outputs/raw_scores/BEST_BASELINE_SCORE.csv",
+) -> pd.DataFrame:
+
+    path = Path(path)
+
+    path.parent.mkdir(
+        parents=True,
+        exist_ok=True,
+    )
+
+    scores = pd.DataFrame()
+
+    scores["ID"] = df["ID"]
+
+    scores["Prediction"] = df["BEST_Score"]
+
+    scores.to_csv(
+        path,
+        index=False,
+    )
+
+    print(f"\nRaw scores saved to:\n{path}")
+
+    return scores
