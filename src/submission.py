@@ -3,7 +3,7 @@ Submission Module
 """
 
 from __future__ import annotations
-
+from src.config import CONFIG
 from pathlib import Path
 
 import pandas as pd
@@ -12,7 +12,7 @@ import pandas as pd
 def create_submission(
     df: pd.DataFrame,
     score: pd.Series,
-    path: str = "outputs/submissions/BEST_BASELINE.csv",
+    path=CONFIG.submission_path,
 ) -> pd.DataFrame:
 
     path = Path(path)
@@ -45,7 +45,8 @@ def create_submission(
 
 def save_raw_scores(
     df: pd.DataFrame,
-    path: str = "outputs/raw_scores/BEST_BASELINE_SCORE.csv") -> pd.DataFrame:
+    path=CONFIG.raw_score_path,
+) -> pd.DataFrame:
 
     path = Path(path)
 

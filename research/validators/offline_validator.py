@@ -14,47 +14,48 @@ from research.validators.recommendation import generate_recommendation
 def validate_experiment(
     baseline_name: str,
     experiment_name: str,
-) :
+) -> None:
 
     print("\n")
     print("=" * 80)
     print("OFFLINE EXPERIMENT VALIDATION")
     print("=" * 80)
 
+    print("\n" + "=" * 80)
+    print("SIMILARITY")
+    print("=" * 80)
     similarity = compare_similarity(
         baseline_name,
         experiment_name,
     )
-    print("=" * 80)
-    print("SIMILARITY")
-    print("=" * 80)
 
-
+    print("\n" + "=" * 80)
+    print("CUSTOMER MOVEMENT")
+    print("=" * 80)
     movement = analyze_customer_movement(
         baseline_name,
         experiment_name,
     )
-    print("=" * 80)
-    print("SIMILARITY")
-    print("=" * 80)
 
+    print("\n" + "=" * 80)
+    print("BUSINESS METRICS")
+    print("=" * 80)
     business = compare_business_metrics(
         baseline_name,
         experiment_name,
     )
-    print("=" * 80)
-    print("SIMILARITY")
-    print("=" * 80)
 
+    print("\n" + "=" * 80)
+    print("FEATURE DIFFERENCE")
+    print("=" * 80)
     features = analyze_feature_shift(
         baseline_name,
         experiment_name,
     )
 
+    print("\n" + "=" * 80)
+    print("RECOMMENDATION")
     print("=" * 80)
-    print("SIMILARITY")
-    print("=" * 80)
-
     generate_recommendation(
         similarity,
         movement,

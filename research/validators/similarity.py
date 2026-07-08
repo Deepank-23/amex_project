@@ -1,126 +1,160 @@
 """
-Submission Similarity Matrix
+Experiment Similarity Validation
 """
 
 from __future__ import annotations
 
+from pathlib import Path
+
 import pandas as pd
 
-from submission_loader import load_submissions
-from overlap import compare_submissions
-from pathlib import Path
+
+from research.submission_loader import load_submissions
+
 
 REPORT_DIR = Path("research/reports")
 REPORT_DIR.mkdir(parents=True, exist_ok=True)
 
-def similarity_matrix():
+
+def compare_similarity(
+    baseline_name: str,
+    experiment_name: str,
+) -> dict:
+    """
+    Compare one experiment against one baseline submission.
+    """
 
     submissions = load_submissions()
 
-    names = list(submissions.keys())
+    missing = [
+        name for name in (baseline_name, experiment_name)
+        if name not in submissions
+    ]
 
-    pearson = pd.DataFrame(
-        index=names,
-        columns=names,
-        dtype=float,
+    if missing:
+        available = ", ".join(sorted(submissions))
+        raise KeyError(
+            f"Missing submission(s): {', '.join(missing)}. "
+            f"Available submissions: {available}"
+        )
+
+    baseline = submissions[baseline_name]
+    experiment = submissions[experiment_name]
+
+    merged = baseline.merge(
+        experiment,
+        on="ID",
+        suffixes=("_baseline", "_experiment"),
     )
 
-    spearman = pd.DataFrame(
-        index=names,
-        columns=names,
-        dtype=float,
+    # -------------------------------------------------
+    # Correlations
+    # -------------------------------------------------
+
+    pearson = merged["Prediction_baseline"].corr(
+        merged["Prediction_experiment"],
+        method="pearson",
     )
 
-    top20 = pd.DataFrame(
-        index=names,
-        columns=names,
-        dtype=float,
+    spearman = merged["Prediction_baseline"].corr(
+        merged["Prediction_experiment"],
+        method="spearman",
     )
 
-    for i, name1 in enumerate(names):
+    # -------------------------------------------------
+    # Absolute Errors
+    # -------------------------------------------------
 
-        for j, name2 in enumerate(names):
+    difference = (
+        merged["Prediction_baseline"]
+        - merged["Prediction_experiment"]
+    )
 
-            if j < i:
-                continue
+    mae = difference.abs().mean()
 
-            df1 = submissions[name1]
-            df2 = submissions[name2]
+    median = difference.abs().median()
 
-            merged = df1.merge(
-                df2,
-                on="ID",
-                suffixes=("_1", "_2"),
-            )
+    maximum = difference.abs().max()
 
-            p = merged["Prediction_1"].corr(
-                merged["Prediction_2"],
-                method="pearson",
-            )
+    # -------------------------------------------------
+    # Top 20% Overlap
+    # -------------------------------------------------
 
-            s = merged["Prediction_1"].corr(
-                merged["Prediction_2"],
-                method="spearman",
-            )
+    k = int(len(merged) * 0.20)
 
-            k = int(len(merged) * 0.20)
+    baseline_top = set(
+        merged.nsmallest(
+            k,
+            "Prediction_baseline",
+        )["ID"]
+    )
 
-            top1 = set(
-                merged.nsmallest(
-                    k,
-                    "Prediction_1",
-                )["ID"]
-            )
+    experiment_top = set(
+        merged.nsmallest(
+            k,
+            "Prediction_experiment",
+        )["ID"]
+    )
 
-            top2 = set(
-                merged.nsmallest(
-                    k,
-                    "Prediction_2",
-                )["ID"]
-            )
+    overlap = len(
+        baseline_top & experiment_top
+    ) / k
 
-            overlap = len(top1 & top2) / k
+    # -------------------------------------------------
+    # Save detailed report
+    # -------------------------------------------------
 
-            pearson.loc[name1, name2] = p
-            pearson.loc[name2, name1] = p
+    report = merged.copy()
 
-            spearman.loc[name1, name2] = s
-            spearman.loc[name2, name1] = s
+    report["Difference"] = difference
 
-            top20.loc[name1, name2] = overlap
-            top20.loc[name2, name1] = overlap
+    report["AbsoluteDifference"] = (
+        difference.abs()
+    )
 
-    return pearson, spearman, top20
+    report = report.sort_values(
+        "AbsoluteDifference",
+        ascending=False,
+    )
+
+    report.to_csv(
+        REPORT_DIR /
+        f"{baseline_name}_vs_{experiment_name}_similarity.csv",
+        index=False,
+    )
+
+    # -------------------------------------------------
+    # Print Summary
+    # -------------------------------------------------
+
+    print(f"Baseline   : {baseline_name}")
+    print(f"Experiment : {experiment_name}")
+
+    print()
+
+    print(f"Pearson           : {pearson:.6f}")
+    print(f"Spearman          : {spearman:.6f}")
+    print(f"Top20 Overlap     : {overlap:.4f}")
+
+    print()
+
+    print(f"MAE               : {mae:.6f}")
+    print(f"Median AE         : {median:.6f}")
+    print(f"Maximum Difference: {maximum:.6f}")
+
+    return {
+        "pearson": pearson,
+        "spearman": spearman,
+        "top20_overlap": overlap,
+        "mae": mae,
+        "median": median,
+        "maximum": maximum,
+    }
 
 
 if __name__ == "__main__":
 
-    pearson, spearman, overlap = similarity_matrix()
-
-    print()
-
-    print("=" * 80)
-    print("PEARSON")
-    print("=" * 80)
-
-    print(pearson.round(4))
-
-    print()
-
-    print("=" * 80)
-    print("SPEARMAN")
-    print("=" * 80)
-
-    print(spearman.round(4))
-
-    print()
-
-    print("=" * 80)
-    print("TOP20 OVERLAP")
-    print("=" * 80)
-
-    print(overlap.round(4))
-
-    pearson.to_csv(REPORT_DIR / "pearson_matrix.csv")
-    spearman.to_csv(REPORT_DIR / "spearman_matrix.csv")
-    overlap.to_csv(REPORT_DIR / "top20_overlap.csv")
+    compare_similarity(
+        "AMEX_R1_BEST_087",
+        "BEST_BASELINE",
+    )

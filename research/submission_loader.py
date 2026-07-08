@@ -15,13 +15,18 @@ SUBMISSION_FOLDER = Path(
     "data/previous_submission"
 )
 
+CURRENT_SUBMISSION_FOLDER = Path(
+    "outputs/raw_scores"
+)
+
 
 def load_submissions():
 
     submissions = {}
 
     files = sorted(
-        SUBMISSION_FOLDER.glob("*")
+        list(SUBMISSION_FOLDER.glob("*"))
+        + list(CURRENT_SUBMISSION_FOLDER.glob("*"))
     )
 
     for file in files:
@@ -38,7 +43,12 @@ def load_submissions():
         else:
             df = pd.read_excel(file)
 
-        submissions[file.stem] = df
+        name = file.stem
+
+        if name.endswith("_SCORE"):
+            name = name[:-6]
+
+        submissions[name] = df
 
     return submissions
 

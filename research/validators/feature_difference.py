@@ -16,7 +16,7 @@ REPORT_DIR = Path("research/reports")
 REPORT_DIR.mkdir(parents=True, exist_ok=True)
 
 
-def analyse_feature_shift(
+def analyze_feature_shift(
     better_model: str,
     weaker_model: str,
     top_n: int = 50000,
@@ -159,7 +159,7 @@ if __name__ == "__main__":
 
     print("Testing Feature Difference")
 
-    analyse_feature_shift(
+    analyze_feature_shift(
         "AMEX_R1_BEST_087",
         "AMEX_R1_LTV_Model_079",
     )

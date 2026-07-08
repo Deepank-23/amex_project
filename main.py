@@ -19,7 +19,22 @@ from src.submission import (
 )
 from src.validation import validate_components
 from src.baseline_validation import validate_raw_scores
+from research.validators.offline_validator import validate_experiment
 def main():
+    CONFIG.submission_dir.mkdir(
+        parents=True,
+        exist_ok=True,
+    )
+
+    CONFIG.raw_score_dir.mkdir(
+        parents=True,
+        exist_ok=True,
+    )
+
+    CONFIG.report_dir.mkdir(
+        parents=True,
+        exist_ok=True,
+    )
 
     print("=" * 80)
     print("LOADING DATA")
@@ -98,14 +113,22 @@ def main():
     submission = create_submission(
         df=df,
         score=df["BEST_Score"],
-        path="outputs/submissions/BEST_BASELINE.csv",
+        path=CONFIG.submission_path,
     )
-    raw_scores = save_raw_scores(df)
+    raw_scores = save_raw_scores(
+    df,
+    CONFIG.raw_score_path,
+    )
     
 
     validate_raw_scores(
-        current_path="outputs/raw_scores/BEST_BASELINE_SCORE.csv",
+        current_path=CONFIG.raw_score_path,
         historical_path="data/previous_submission/AMEX_R1_BEST_087.xlsx",
+    )
+
+    validate_experiment(
+        baseline_name="AMEX_R1_BEST_087",
+        experiment_name=CONFIG.name,
     )
 
     print(submission.head())
