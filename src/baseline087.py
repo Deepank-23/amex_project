@@ -5,7 +5,8 @@ BEST 0.87 Baseline Model
 from __future__ import annotations
 from src.config import CONFIG
 import pandas as pd
-
+from src.customer_value import relationship_score
+from src.interactions import rank_product
 
 def z(series: pd.Series) -> pd.Series:
 
@@ -41,14 +42,10 @@ def create_best087_score(
     # Interaction
     # -----------------------------------------
 
-    interaction = (
 
-        df["f1"].rank(pct=True)
-
-        *
-
-        df["category_spend"].rank(pct=True)
-
+    interaction = rank_product(
+        df["f1"],
+        df["category_spend"],
     )
 
     z_interaction = z(
@@ -64,10 +61,18 @@ def create_best087_score(
     )
 
     # -----------------------------------------
+    # Relationship
+    # -----------------------------------------
+
+    z_relationship = z(
+        relationship_score(df)
+    )
+
+    # -----------------------------------------
     # Final BEST Score
     # -----------------------------------------
 
-    df["BEST_Score"] = (
+    score = (
 
         CONFIG.interest_weight * z_interest
 
@@ -88,5 +93,13 @@ def create_best087_score(
         CONFIG.risk_weight * z_risk
 
     )
+
+    if CONFIG.use_relationship_score:
+        score += (
+            CONFIG.relationship_weight
+            * z_relationship
+        )
+
+    df["BEST_Score"] = score
 
     return df

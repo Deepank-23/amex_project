@@ -65,10 +65,9 @@ def reward_value(df: pd.DataFrame) -> pd.Series:
 
 def interaction(df: pd.DataFrame) -> pd.Series:
 
-    return (
-        df["f1"].rank(pct=True)
-        *
-        category_spend(df).rank(pct=True)
+    return rank_product(
+        df["f1"],
+        category_spend(df),
     )
 
 def risk_discount(df: pd.DataFrame) -> pd.Series:

@@ -19,7 +19,6 @@ from src.submission import (
 )
 from src.validation import validate_components
 from src.baseline_validation import validate_raw_scores
-from experiments.exp001_continuous_apr import (create_economics_continuous)
 def main():
 
     print("=" * 80)
@@ -50,7 +49,6 @@ def main():
     
     df = create_economics(df)
 
-    df = create_economics_continuous(df)
 
     print(df.shape)
 
@@ -107,7 +105,7 @@ def main():
 
     validate_raw_scores(
         current_path="outputs/raw_scores/BEST_BASELINE_SCORE.csv",
-        historical_path="data/AMEX_R1_BEST_087.xlsx",
+        historical_path="data/previous_submission/AMEX_R1_BEST_087.xlsx",
     )
 
     print(submission.head())

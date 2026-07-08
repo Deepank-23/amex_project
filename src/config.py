@@ -44,6 +44,28 @@ class ExperimentConfig:
     breakage_weight: float = 0.125
     interaction_weight: float = 0.200
     risk_weight: float = 0.050
+    # ----------------------------
+# Experiment Flags
+# ----------------------------
+
+    use_relationship_score: bool = True
+
+    relationship_weight: float = 0.05
+
+    relationship_weights = {
+    "supplementary": 0.35,
+    "charge_cards": 0.35,
+    "credit_line": 0.15,
+    "consumer_credit": 0.15,
+    }
+    # ----------------------------
+    # Experiment Flags
+    # ----------------------------
+
+    use_relationship_score: bool = True
+
+    relationship_weight: float = 0.05
+    
 
 
 CONFIG = ExperimentConfig()
