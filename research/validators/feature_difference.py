@@ -16,7 +16,7 @@ REPORT_DIR = Path("research/reports")
 REPORT_DIR.mkdir(parents=True, exist_ok=True)
 
 
-def feature_difference(
+def analyse_feature_shift(
     better_model: str,
     weaker_model: str,
     top_n: int = 50000,
@@ -37,18 +37,32 @@ def feature_difference(
 
     submissions = load_submissions()
 
-    better = submissions[better_model].rename(
-        columns={"Prediction": "Rank_Better"}
+    better = submissions[better_model].copy()
+
+    better["Rank_Better"] = (
+        better["Prediction"]
+        .rank(method="first", ascending=False)
+        .astype(int)
     )
 
-    weaker = submissions[weaker_model].rename(
-        columns={"Prediction": "Rank_Weaker"}
+    weaker = submissions[weaker_model].copy()
+
+    weaker["Rank_Weaker"] = (
+        weaker["Prediction"]
+        .rank(method="first", ascending=False)
+        .astype(int)
     )
 
     merged = (
         data
-        .merge(better, on="ID")
-        .merge(weaker, on="ID")
+        .merge(
+            better[["ID", "Rank_Better"]],
+            on="ID",
+        )
+        .merge(
+            weaker[["ID", "Rank_Weaker"]],
+            on="ID",
+        )
     )
 
     # -----------------------------
@@ -84,12 +98,17 @@ def feature_difference(
         p = promoted[col].mean()
         d = demoted[col].mean()
 
+        if abs(d) > 1e-9:
+            percent = 100 * (p - d) / abs(d)
+        else:
+            percent = 0.0
         report.append(
             {
                 "Feature": col,
                 "Promoted": p,
                 "Demoted": d,
                 "Difference": p - d,
+                "PercentDifference": percent,
             }
         )
 
@@ -117,13 +136,30 @@ def feature_difference(
     print("=" * 80)
 
     print(report.head(25))
+    print()
+
+    print("Largest Positive Shifts")
+
+    print(report.head(10))
+
+    print()
+
+    print("Largest Negative Shifts")
+
+    print(
+        report.sort_values(
+            "Difference"
+        ).head(10)
+    )
 
     return report
 
 
 if __name__ == "__main__":
 
-    feature_difference(
+    print("Testing Feature Difference")
+
+    analyse_feature_shift(
         "AMEX_R1_BEST_087",
         "AMEX_R1_LTV_Model_079",
     )

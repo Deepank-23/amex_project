@@ -23,3 +23,7 @@ Priority Score =
 | EXP004 | Customer Segmentation | 8 | 8 | 9 | 6 | 6 | ⭐⭐⭐ |
 | EXP005 | Feature Discovery | 7 | 4 | 7 | 10 | 2 | ⭐⭐⭐⭐ |
 | EXP006 | Learning-to-Rank | 10 | 10 | 8 | 2 | 8 | ⭐⭐ |
+
+Phase 3 – Historical Analysis
+
+After several controlled experiments have been completed, build a historical analysis engine to synthesize evidence across all submissions and experiments. This phase focuses on identifying recurring business signals, validating hypotheses over time, and guiding future experiment design rather than generating new submissions.
