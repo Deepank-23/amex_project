@@ -126,7 +126,7 @@ def main():
         historical_path="data/previous_submission/AMEX_R1_BEST_087.xlsx",
     )
 
-    validate_experiment(
+    validation = validate_experiment(
         baseline_name="AMEX_R1_BEST_087",
         experiment_name=CONFIG.name,
     )
@@ -135,7 +135,7 @@ def main():
 
     print("\nDone.")
 
-    return submission
+    return validation
 
 
 if __name__ == "__main__":

@@ -152,7 +152,13 @@ def analyze_feature_shift(
         ).head(10)
     )
 
-    return report
+    return {
+        "top_positive": report.head(10),
+        "top_negative": report.sort_values(
+            "Difference"
+        ).head(10),
+        "report": report,
+    }
 
 
 if __name__ == "__main__":

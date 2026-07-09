@@ -132,8 +132,33 @@ def compare_business_metrics(
 
     print(report.round(3).to_string(index=False))
 
-    return report
+    summary = {
+        "Spend": get_metric(report, "f5"),
+        "Revolve": get_metric(report, "f1"),
+        "Interest": get_metric(report, "interest_revenue"),
+        "Merchant": get_metric(report, "interchange_revenue"),
+        "Breakage": get_metric(report, "rewards_breakage"),
+        "Risk": get_metric(report, "f11"),
+        "NetProfit": get_metric(report, "NetProfit"),
+        "LTV": get_metric(report, "LTV_Profitability"),
+    }
 
+    return {
+        "summary": summary,
+        "report": report,
+    }
+def get_metric(report, metric):
+
+    row = report.loc[
+        report["Metric"] == metric
+    ]
+
+    if row.empty:
+        return None
+
+    return float(
+        row["PercentDifference"].iloc[0]
+    )
 
 if __name__ == "__main__":
 

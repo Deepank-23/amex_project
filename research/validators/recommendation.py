@@ -16,10 +16,25 @@ def _value(report: pd.DataFrame, metric: str) -> float:
     return float(row["PercentDifference"].iloc[0])
 
 
+def _report_from(value: pd.DataFrame | dict) -> pd.DataFrame:
+
+    if isinstance(value, pd.DataFrame):
+        return value
+
+    report = value.get("report")
+
+    if isinstance(report, pd.DataFrame):
+        return report
+
+    raise TypeError(
+        "business must be a DataFrame report or a dict containing a DataFrame under 'report'"
+    )
+
+
 def generate_recommendation(
     similarity: dict,
     movement: pd.DataFrame,
-    business: pd.DataFrame,
+    business: pd.DataFrame | dict,
     features: pd.DataFrame,
 ):
 
@@ -30,15 +45,17 @@ def generate_recommendation(
 
     spearman = similarity["spearman"]
 
-    spend = _value(business, "f5")
+    business_report = _report_from(business)
 
-    revolve = _value(business, "f1")
+    spend = _value(business_report, "f5")
 
-    risk = _value(business, "f11")
+    revolve = _value(business_report, "f1")
 
-    net_profit = _value(business, "NetProfit")
+    risk = _value(business_report, "f11")
 
-    ltv = _value(business, "LTV_Profitability")
+    net_profit = _value(business_report, "NetProfit")
+
+    ltv = _value(business_report, "LTV_Profitability")
 
     print(f"Spearman : {spearman:.4f}")
     print(f"Spend    : {spend:+.2f}%")

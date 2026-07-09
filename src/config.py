@@ -6,7 +6,7 @@ from dataclasses import dataclass
 from pathlib import Path
 
 
-@dataclass(frozen=True)
+@dataclass(frozen=False)
 class ExperimentConfig:
 
     # --------------------------------------------------
@@ -78,9 +78,9 @@ class ExperimentConfig:
     # Experiment Flags
     # --------------------------------------------------
 
-    use_relationship_score: bool = True
+    use_relationship_score: bool = False
 
-    relationship_weight: float = 0.05
+    relationship_weight: float =0
 
     relationship_weights = {
         "supplementary": 0.35,
@@ -89,10 +89,30 @@ class ExperimentConfig:
         "consumer_credit": 0.15,
     }
 
+    # ----------------------------
+    # Premium Engagement
+    # ----------------------------
+
+    use_premium_score: bool = True
+
+    premium_weight: float = 0.03
+    lounge_weight = 0.20          # f13
+    airline_weight = 0.30         # f14
+    cab_weight = 0.10             # f15
+    entertainment_weight = 0.25   # f16
+    email_open_weight = 0.10      # f22
+    email_click_weight = 0.05     # f23
     # --------------------------------------------------
     # Automatic File Paths
     # --------------------------------------------------
+    # ----------------------------
+    # Conditional Premium
+    # ----------------------------
 
+    use_conditional_premium: bool = True
+    conditional_spend_threshold: float = 0.50
+
+    conditional_premium_weight: float = 0.03
     @property
     def submission_path(self) -> Path:
         return self.submission_dir / f"{self.name}.csv"

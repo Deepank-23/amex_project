@@ -9,12 +9,13 @@ from research.validators.customer_difference import analyze_customer_movement
 from research.validators.feature_difference import analyze_feature_shift
 from research.validators.business_metrics import compare_business_metrics
 from research.validators.recommendation import generate_recommendation
-
+from research.validators.rank_band import analyze_rank_bands
+from research.validators.borderline import analyze_borderline
 
 def validate_experiment(
     baseline_name: str,
     experiment_name: str,
-) -> None:
+) -> dict[str,object]:
 
     print("\n")
     print("=" * 80)
@@ -56,9 +57,43 @@ def validate_experiment(
     print("\n" + "=" * 80)
     print("RECOMMENDATION")
     print("=" * 80)
-    generate_recommendation(
+    decision = generate_recommendation(
         similarity,
         movement,
-        business,
-        features,
+        business["report"],
+        features["report"],
     )
+
+    print("\n" + "=" * 80)
+    print("RANK BAND ANALYSIS")
+    print("=" * 80)
+
+    rank_bands = analyze_rank_bands(
+        baseline_name,
+        experiment_name,
+    )
+    print("\n" + "=" * 80)
+    print("BORDERLINE ANALYSIS")
+    print("=" * 80)
+
+    borderline = analyze_borderline(
+        baseline_name,
+        experiment_name,
+    )
+
+    return {
+        "similarity": similarity,
+
+        "movement": {
+            "entered_top20": int(movement["Entered_Top20"].sum()),
+            "exited_top20": int(movement["Exited_Top20"].sum()),
+        },
+
+        "business": business["summary"],
+
+        "features": features,
+
+        "decision": decision,
+        "rank_bands": rank_bands,
+        "borderline": borderline
+    }
