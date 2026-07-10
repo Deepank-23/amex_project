@@ -6,6 +6,7 @@ Loads every historical submission automatically.
 
 from __future__ import annotations
 
+from collections.abc import Iterable
 from pathlib import Path
 
 import pandas as pd
@@ -20,9 +21,21 @@ CURRENT_SUBMISSION_FOLDER = Path(
 )
 
 
-def load_submissions():
+def submission_name(file: Path) -> str:
+    name = file.stem
+
+    if name.endswith("_SCORE"):
+        name = name[:-6]
+
+    return name
+
+
+def load_submissions(
+    names: Iterable[str] | None = None,
+):
 
     submissions = {}
+    requested = set(names) if names is not None else None
 
     files = sorted(
         list(SUBMISSION_FOLDER.glob("*"))
@@ -38,15 +51,15 @@ def load_submissions():
         ]:
             continue
 
+        name = submission_name(file)
+
+        if requested is not None and name not in requested:
+            continue
+
         if file.suffix.lower() == ".csv":
             df = pd.read_csv(file)
         else:
             df = pd.read_excel(file)
-
-        name = file.stem
-
-        if name.endswith("_SCORE"):
-            name = name[:-6]
 
         submissions[name] = df
 

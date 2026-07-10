@@ -14,6 +14,10 @@ from src.premium_engagement import premium_engagement_score
 from src.conditional_premium import (
     conditional_premium_score,
 )
+
+from src.benefit_cost import (
+    benefit_intensity,
+)
 def z(series: pd.Series) -> pd.Series:
 
     std = series.std()
@@ -75,6 +79,18 @@ def create_best087_score(
     z_risk = z(
         -df["f11"]
     )
+    benefit_efficiency = (
+        df["benefit_cost"]
+        /
+        (
+            df["interest_revenue"]
+            + df["interchange_revenue"]
+        ).clip(lower=1)
+    )
+
+    z_benefit = z(
+        -benefit_efficiency
+    )
 
     # -----------------------------------------
     # Relationship
@@ -100,23 +116,27 @@ def create_best087_score(
 
     score = (
 
-        CONFIG.interest_weight * z_interest
+        0.374 * z_interest
 
         +
 
-        CONFIG.merchant_weight * z_interchange
+        0.501 * z_interchange
 
         +
 
-        CONFIG.breakage_weight * z_breakage
+        0.085 * z_breakage
 
         +
 
-        CONFIG.interaction_weight * z_interaction
+        0.14 * z_interaction
 
         +
 
-        CONFIG.risk_weight * z_risk
+        0.15 * z_risk
+
+        +
+
+        0.15 * z_benefit
 
     )
 

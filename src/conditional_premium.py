@@ -32,11 +32,13 @@ def conditional_premium_score(
     # Soft Gate
     # ---------------------------------
 
+    threshold = CONFIG.conditional_spend_threshold
+
     gate = (
         spend
-        .sub(CONFIG.conditional_spend_threshold)
+        .sub(threshold)
         .clip(lower=0)
-        / (1 - CONFIG.conditional_spend_threshold)
+        / (1 - threshold)
     )
 
     return premium * gate

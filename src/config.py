@@ -30,6 +30,9 @@ class ExperimentConfig:
     data_dir: Path = Path("data")
 
     train_path: Path = data_dir / "dataset.csv"
+    submission_template_path: Path = (
+        data_dir / "6a3cb64c7cae4_campus_challenge_r1_submission_template.xlsx"
+    )
 
     # --------------------------------------------------
     # Output Paths
@@ -68,11 +71,11 @@ class ExperimentConfig:
 
     merchant_weight: float = 0.501
 
-    breakage_weight: float = 0.125
+    breakage_weight: float = 0.085
 
-    interaction_weight: float = 0.200
+    interaction_weight: float = 0.140
 
-    risk_weight: float = 0.050
+    risk_weight: float = 0.150
 
     # --------------------------------------------------
     # Experiment Flags
@@ -93,7 +96,7 @@ class ExperimentConfig:
     # Premium Engagement
     # ----------------------------
 
-    use_premium_score: bool = True
+    use_premium_score: bool = False
 
     premium_weight: float = 0.03
     lounge_weight = 0.20          # f13
@@ -109,13 +112,17 @@ class ExperimentConfig:
     # Conditional Premium
     # ----------------------------
 
-    use_conditional_premium: bool = True
+    use_conditional_premium: bool = False
     conditional_spend_threshold: float = 0.50
 
     conditional_premium_weight: float = 0.03
     @property
     def submission_path(self) -> Path:
         return self.submission_dir / f"{self.name}.csv"
+
+    @property
+    def submission_workbook_path(self) -> Path:
+        return self.submission_dir / f"{self.name}.xlsx"
 
     @property
     def raw_score_path(self) -> Path:

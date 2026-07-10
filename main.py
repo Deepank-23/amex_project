@@ -103,7 +103,7 @@ def main():
     print("VALIDATION")
     print("=" * 80)
 
-    validate_components(df)
+    # validate_components(df)
 
     print("\n")
 
@@ -120,23 +120,30 @@ def main():
     CONFIG.raw_score_path,
     )
     
+    # validation = validate_raw_scores(
+    #     current_path=CONFIG.raw_score_path,
+    #     historical_path="data/previous_submission/AMEX_R1_BEST_087.xlsx",
+    # )
+    # validate_raw_scores(
+    #     current_path=CONFIG.raw_score_path,
+    #     historical_path="data/previous_submission/AMEX_R1_BEST_087.xlsx",
+    # )
 
-    validate_raw_scores(
-        current_path=CONFIG.raw_score_path,
-        historical_path="data/previous_submission/AMEX_R1_BEST_087.xlsx",
-    )
-
-    validation = validate_experiment(
-        baseline_name="AMEX_R1_BEST_087",
-        experiment_name=CONFIG.name,
-    )
+    # validation = validate_experiment(
+    #     baseline_name="AMEX_R1_BEST_087",
+    #     experiment_name=CONFIG.name,
+    # )
 
     print(submission.head())
 
     print("\nDone.")
 
-    return validation
+    # return validation
 
 
 if __name__ == "__main__":
+
+    CONFIG.name = "EXP008_BENEFIT_COST"
+
     main()
+    

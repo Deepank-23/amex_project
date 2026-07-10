@@ -81,8 +81,6 @@ def create_economics(df: pd.DataFrame) -> pd.DataFrame:
 
         .clip(lower=0)
 
-        * 0.01
-
         * CONFIG.breakage_value
 
     )
@@ -103,7 +101,7 @@ def create_economics(df: pd.DataFrame) -> pd.DataFrame:
 
     df["benefit_cost"] = (
 
-        df["f13"] * 50
+        df["f13"] * 32
 
         + df["f14"]
 
